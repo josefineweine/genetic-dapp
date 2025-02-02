@@ -1,0 +1,18 @@
+{
+  "name": "genetic-dapp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Josefine Weinefalk",
+  "license": "MIT",
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
+    "hardhat": "^2.22.18",
+    "save-dev": "^0.0.1-security",
+    "web3": "^4.16.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.8"
+  }
+}

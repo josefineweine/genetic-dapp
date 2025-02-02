@@ -1,0 +1,14 @@
+.donor-list {
+    padding: 20px;
+    border: 1px solid #ddd;
+  }
+  
+  .donor-list ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .donor-list li {
+    margin-bottom: 10px;
+  }
+  
