@@ -1,18 +1,10 @@
-// utils/contract.js
-import { ethers } from 'ethers';
-import { CONTRACT_ADDRESS } from '../config/contract'; // Assuming this file contains the contract address
-import donorRegistryABI from '../contracts/DonorRegistry.cjs'; // Import ABI from the .cjs file
+import DonorRegistryABI from "../contracts/DonorRegistry.json";
 
-export const connectToContract = async () => {
-  if (window.ethereum) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []); // Request account access
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS; // Load from .env
 
-    const signer = provider.getSigner(); // Get signer (the user's wallet)
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, donorRegistryABI, signer); // Use imported ABI and contract address
-    return contract;
-  } else {
-    alert("MetaMask is required!");
-    return null;
-  }
+const donorRegistryConfig = {
+  address: CONTRACT_ADDRESS,
+  abi: DonorRegistryABI.abi, // Load ABI from JSON
 };
+
+export default donorRegistryConfig;
