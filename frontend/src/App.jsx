@@ -1,5 +1,5 @@
 import React from "react";
-import MetaMaskButton from "./components/MetaMaskButton";
+import MetaMaskButton from "./components/common/MetaMaskButton";
 
 const App = () => {
   return (
@@ -11,3 +11,4 @@ const App = () => {
 };
 
 export default App;
+

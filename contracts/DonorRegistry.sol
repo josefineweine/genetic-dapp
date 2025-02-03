@@ -7,42 +7,46 @@ contract DonorRegistry {
         uint256 age;
         string bloodType;
         uint256 usageCount;
+        uint256 maxUsage;
         bool isActive;
+        // Add other fields here as necessary
     }
 
-    mapping(address => Donor) public donors;
-    mapping(address => uint256) public usageLimits;
+    mapping(uint256 => Donor) public donors;
+    uint256 public donorCount;
 
-    event DonorRegistered(address indexed donorAddress, string name, uint256 age, string bloodType);
-    event UsageUpdated(address indexed donorAddress, uint256 usageCount);
+    event DonorRegistered(uint256 indexed donorId, string name, uint256 age, string bloodType);
+    event DonorUsageUpdated(uint256 indexed donorId, uint256 usageCount);
+    event DonorDeactivated(uint256 indexed donorId);
 
-    // Register a new donor
     function registerDonor(string memory _name, uint256 _age, string memory _bloodType) public {
-        donors[msg.sender] = Donor({
+        donorCount++;
+        donors[donorCount] = Donor({
             name: _name,
             age: _age,
             bloodType: _bloodType,
             usageCount: 0,
+            maxUsage: 3, // Example max usage
             isActive: true
         });
-        emit DonorRegistered(msg.sender, _name, _age, _bloodType);
+        emit DonorRegistered(donorCount, _name, _age, _bloodType);
     }
 
-    // Track donor usage
-    function updateUsage(uint256 _usageCount) public {
-        require(donors[msg.sender].isActive, "Donor is not active.");
-        donors[msg.sender].usageCount = _usageCount;
-        emit UsageUpdated(msg.sender, _usageCount);
+    function incrementDonorUsage(uint256 donorId) public {
+        require(donorId > 0 && donorId <= donorCount, "Invalid donor ID");
+        Donor storage donor = donors[donorId];
+        require(donor.isActive, "Donor is not active");
+        require(donor.usageCount < donor.maxUsage, "Maximum usage reached");
+
+        donor.usageCount++;
+
+        if (donor.usageCount >= donor.maxUsage) {
+            donor.isActive = false;
+            emit DonorDeactivated(donorId);
+        }
+
+        emit DonorUsageUpdated(donorId, donor.usageCount);
     }
 
-    // Set usage limit for the donor
-    function setUsageLimit(address _donor, uint256 _limit) public {
-        usageLimits[_donor] = _limit;
-    }
-
-    // Fetch donor data
-    function getDonorData() public view returns (string memory, uint256, string memory, uint256, bool) {
-        Donor memory donor = donors[msg.sender];
-        return (donor.name, donor.age, donor.bloodType, donor.usageCount, donor.isActive);
-    }
+    // Optionally, add getter functions for donor data as needed
 }

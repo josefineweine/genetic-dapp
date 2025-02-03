@@ -2,7 +2,7 @@ const { ethers } = require("hardhat");
 require("dotenv").config();
 
 async function main() {
-    const contractAddress = "0x0b54FAD894c1EFC7B190cE92D122F5E93704D04B"; // Your deployed contract address
+    const contractAddress = process.env.CONTRACT_ADDRESS; // Use the env variable
     const donorRegistryArtifact = require('../artifacts/contracts/DonorRegistry.sol/DonorRegistry.json');
 
     // Set up provider and wallet
