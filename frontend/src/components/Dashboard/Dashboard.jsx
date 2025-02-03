@@ -1,62 +1,60 @@
-// src/components/Dashboard/Dashboard.jsx
-import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-import { CONTRACT_ADDRESS } from '../../config/contract';  // Make sure this is where your contract address is stored
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Dashboard.css";
 
-const Dashboard = () => {
-  const [donorData, setDonorData] = useState(null);
-  const [userAddress, setUserAddress] = useState(null);
-  const [loading, setLoading] = useState(true);
+function Dashboard() {
+  const navigate = useNavigate();
+  const [donors, setDonors] = useState([]);
+  const [successfulMatches, setSuccessfulMatches] = useState([]);
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const isWalletConnected = localStorage.getItem("walletAddress"); // Check if wallet is connected
 
   useEffect(() => {
-    const connectToMetaMask = async () => {
-      if (window.ethereum) {
-        try {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          await provider.send("eth_requestAccounts", []); // Request account access
-          const signer = provider.getSigner();
-          const address = await signer.getAddress(); // Get user's wallet address
-          setUserAddress(address);
+    if (!isWalletConnected) {
+      navigate("/"); // If wallet is not connected, navigate back to the home page
+    }
 
-          // Connect to contract
-          const contract = new ethers.Contract(CONTRACT_ADDRESS, donorRegistryABI, signer);
-
-          // Fetch donor data
-          const data = await contract.getDonorData();
-          setDonorData(data);
-          setLoading(false);
-        } catch (error) {
-          console.error("Error connecting to MetaMask or contract:", error);
-          setLoading(false);
-        }
-      } else {
-        alert("MetaMask is required!");
-        setLoading(false);
-      }
-    };
-
-    connectToMetaMask();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    // Simulating data fetch for donors and successful matches
+    setDonors([
+      { id: 1, name: "Donor 1", age: 28 },
+      { id: 2, name: "Donor 2", age: 35 },
+    ]);
+    setSuccessfulMatches([
+      { id: 1, name: "Match 1", status: "Matched Successfully" },
+    ]);
+  }, [isWalletConnected, navigate]);
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      {donorData ? (
-        <>
-          <p>Donor Name: {donorData.name}</p>
-          <p>Age: {donorData.age}</p>
-          <p>Blood Type: {donorData.bloodType}</p>
-          <p>Usage Count: {donorData.usageCount}</p>
-        </>
-      ) : (
-        <p>No donor data available.</p>
+    <div className="dashboard-container">
+      <h2>Welcome to the Administrator Dashboard</h2>
+      <div className="action-cards">
+        <div className="action-card" onClick={() => navigate("/register")}>
+          <h3>Register New Donor</h3>
+        </div>
+        <div className="action-card" onClick={() => navigate("/donors")}>
+          <h3>View Donors</h3>
+        </div>
+        <div className="action-card" onClick={() => navigate("/match")}>
+          <h3>Find Donor Match</h3>
+        </div>
+      </div>
+
+      {successfulMatches.length > 0 && (
+        <div className="successful-matches-section">
+          <h3>Successful Matches</h3>
+          <div className="donor-grid">
+            {successfulMatches.map((match) => (
+              <div key={match.id} className="donor-card">
+                <h4>{match.name}</h4>
+                <p>Status: {match.status}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
-};
+}
 
 export default Dashboard;
